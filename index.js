@@ -5,6 +5,7 @@ dotenv.config();
 
 const app= express();
 app.use(express.json());
+const PORT = 3000;
 
 const con= new Client({
     host: process.env.HOST,
@@ -15,3 +16,36 @@ const con= new Client({
 })
 con.connect().then(()=>
     console.log("connected to database"))
+
+app.post('/postdata', async (req, res)=>{
+    const {name, age}= req.body;
+    const insert_query= `INSERT INTO demo(name, age) VALUES($1, $2) RETURNING *`;
+   con.query(insert_query,[name,age],(err,result)=>{
+    if(err)
+    {
+        res.send(err)
+    }else{
+        console.log(result)
+        res.send("POSTED DATA")
+    }
+   })
+})
+
+app.get('/getdata', async (req, res)=>{
+    const select_query= `SELECT * FROM demo`;
+   con.query(select_query,(err,result)=>{
+    if(err)
+    {
+        res.send(err)
+    }else{
+        console.log(result)
+        res.send(result.rows)
+    }
+   })
+})
+
+
+app.listen(PORT, () => {
+    console.log(`Server is runing on port ${PORT}`);
+    
+})
