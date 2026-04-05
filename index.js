@@ -73,6 +73,19 @@ app.put('/updatedata/:id', async (req, res)=>{
     })
 })
 
+app.delete('/deletedata/:id', async (req, res)=>{
+    const{id} = req.params;
+    const detete_query= `DELETE FROM demo WHERE id=$1 RETURNING *`;
+    con.query(detete_query,[id],(err,result)=>{
+        if(err)
+        {
+            res.send(err)
+        }else{
+            console.log(result)
+            res.send("DATA DELETED")
+        }
+    })
+})
 app.listen(PORT, () => {
     console.log(`Server is runing on port ${PORT}`);
     
