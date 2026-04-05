@@ -44,6 +44,19 @@ app.get('/getdata', async (req, res)=>{
    })
 })
 
+app.get('/fetchbyId/:id', async (req, res)=>{
+    const {id}= req.params;
+    const select_query= `SELECT * FROM demo WHERE id =$1`;
+   con.query(select_query,[id],(err,result)=>{
+    if(err)
+    {
+        res.send(err)
+    }else{
+        console.log(result)
+        res.send(result.rows[0])
+    }
+   })
+})
 
 app.listen(PORT, () => {
     console.log(`Server is runing on port ${PORT}`);
