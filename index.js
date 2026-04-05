@@ -58,6 +58,21 @@ app.get('/fetchbyId/:id', async (req, res)=>{
    })
 })
 
+app.put('/updatedata/:id', async (req, res)=>{
+    const {id}= req.params;
+    const {name}= req.body;
+    const update_query= `UPDATE demo SET name=$1 WHERE id=$2 RETURNING *`;
+    con.query(update_query,[name, id],(err,result)=>{
+        if(err)
+        {
+            res.send(err)
+        }else{
+            console.log(result)
+            res.send("DATA UPDATED")
+        }
+    })
+})
+
 app.listen(PORT, () => {
     console.log(`Server is runing on port ${PORT}`);
     
