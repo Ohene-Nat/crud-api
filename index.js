@@ -18,17 +18,26 @@ con.connect().then(()=>
     console.log("connected to database"))
 
 app.post('/postdata', async (req, res)=>{
-    const {name, age}= req.body;
-    const insert_query= `INSERT INTO demo(name, age) VALUES($1, $2) RETURNING *`;
-   con.query(insert_query,[name,age],(err,result)=>{
-    if(err)
-    {
-        res.send(err)
-    }else{
-        console.log(result)
+    const data = Array.isArray(req.body) ? req.body : [req.body];
+    
+    try {
+        for (const item of data) {
+            const {name, age} = item;
+            const insert_query= `INSERT INTO demo(name, age) VALUES($1, $2) RETURNING *`;
+            await new Promise((resolve, reject) => {
+                con.query(insert_query,[name,age],(err,result)=>{
+                    if(err) reject(err);
+                    else {
+                        console.log(result)
+                        resolve(result)
+                    }
+                })
+            })
+        }
         res.send("POSTED DATA")
+    } catch (err) {
+        res.send(err)
     }
-   })
 })
 
 app.get('/getdata', async (req, res)=>{
